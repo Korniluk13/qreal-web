@@ -1,8 +1,6 @@
 package com.qreal.robots.controller;
 
 import com.qreal.robots.model.diagram.Diagram;
-import com.qreal.robots.model.diagram.DiagramRequest;
-import com.qreal.robots.model.diagram.Folder;
 import com.qreal.robots.model.diagram.OpenRequest;
 import com.qreal.robots.service.DiagramService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,7 +10,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -25,42 +22,25 @@ public class DiagramRepositoryController {
     private DiagramService diagramService;
 
     @ResponseBody
-    @RequestMapping(value = "/saveDiagram", method = RequestMethod.POST)
-    public String saveDiagram(@RequestBody Diagram diagram) {
-        return diagramService.saveDiagram(diagram);
+    @RequestMapping(value = "/save", method = RequestMethod.POST)
+    public String save(@RequestBody Diagram diagram) {
+        diagramService.save(diagram);
+        return "{\"message\":\"OK\"}";
     }
 
     @ResponseBody
-    @RequestMapping(value = "/openDiagram", method = RequestMethod.POST)
-    public Diagram openDiagram(@RequestBody DiagramRequest request) {
-        return diagramService.openDiagram(request);
+    @RequestMapping(value = "/open", method = RequestMethod.POST)
+    public Diagram open(@RequestBody OpenRequest request) {
+        return diagramService.openByName(request.getName());
     }
 
     @ResponseBody
-    @RequestMapping(value = "/showDiagramNames", method = RequestMethod.POST)
-    public List<String> showDiagramNames(@RequestBody OpenRequest request) {
-        return diagramService.showDiagramNames(request.getName());
-    }
+    @RequestMapping(value = "/show", method = RequestMethod.POST)
+    public List<String> showByUserName() { return diagramService.showDiagramsByUserName(); }
 
     @ResponseBody
-    @RequestMapping(value = "/createFolder", method = RequestMethod.POST)
-    public String createFolder(@RequestBody Folder folder) {
-        return diagramService.createFolder(folder);
+    @RequestMapping(value = "/exists", method = RequestMethod.POST)
+    public boolean exists(@RequestBody OpenRequest request) {
+        return diagramService.exists(request.getName());
     }
-
-    @ResponseBody
-    @RequestMapping(value = "/showFolders", method = RequestMethod.POST)
-    public List<String> showFolders(@RequestBody OpenRequest request) {
-        return diagramService.showFoldersByUserName(request.getName());
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "/getParentFolderId", method = RequestMethod.POST)
-    public String getParentFolderId(@RequestBody OpenRequest request) {
-        return diagramService.getParentFolder(request.getName());
-    }
-
-    @ResponseBody
-    @RequestMapping(value = "/getUser", method = RequestMethod.POST)
-    public String getUserName() { return diagramService.getUserName(); }
 }

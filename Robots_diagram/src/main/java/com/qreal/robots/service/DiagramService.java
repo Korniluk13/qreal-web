@@ -1,8 +1,6 @@
 package com.qreal.robots.service;
 
 import com.qreal.robots.model.diagram.Diagram;
-import com.qreal.robots.model.diagram.DiagramRequest;
-import com.qreal.robots.model.diagram.Folder;
 
 import java.util.List;
 
@@ -11,17 +9,13 @@ import java.util.List;
  */
 public interface DiagramService {
 
-    public String saveDiagram(Diagram diagram);
+    public void save(Diagram diagram);
 
-    public Diagram openDiagram(DiagramRequest request);
+    public Diagram openById(Long diagramId);
 
-    public String createFolder(Folder folder);
+    public Diagram openByName(String name);
 
-    public List<String> showFoldersByUserName(String currentFolderId);
+    public List<String> showDiagramsByUserName();
 
-    public String getParentFolder(String currentFolderId);
-
-    public String getUserName();
-
-    public List<String> showDiagramNames(String folderId);
+    public boolean exists(String name);
 }
