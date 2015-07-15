@@ -18,8 +18,9 @@
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">File<b class="caret"></b></a>
                         <ul class="dropdown-menu">
                             <li><a href="" role="menuitem" tabindex="-1" ng-click="vm.createNew()">New</a></li>
+                            <li><a href="" role="menuitem" tabindex="-1" data-toggle="modal" data-target="#diagrams" ng-click="vm.openFolderWindow()">Open</a></li>
                             <li><a href="" role="menuitem" tabindex="-1" ng-click="vm.saveDiagram()">Save</a></li>
-                            <li><a href="" role="menuitem" tabindex="-1" data-toggle="modal" data-target="#diagrams" ng-click="vm.openDiagramWindow()">Open</a></li>
+                            <li><a href="" role="menuitem" tabindex="-1" data-toggle="modal" data-target="#diagrams" ng-click="vm.saveDiagramAs()">SaveAs</a></li>
                         </ul>
                     </li>
                     <li>
@@ -91,13 +92,15 @@
                         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                         <h4 class="modal-title">Diagrams</h4>
                     </div>
-                    <div class="modal-body">
-                        <div class="list-group" id="diagramNames">
+                    <div class="modal-body_nopadding">
+                        <div class="folderMenu">
                         </div>
-                        <div class="folders">
-                            </div>
-                        <div class="fields">
-                            </div>
+                        <div class="folderView">
+                            <ul class="folderTable">
+                            </ul>
+                        </div>
+                        <div class="savingMenu">
+                        </div>
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>

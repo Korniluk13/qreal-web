@@ -2,6 +2,8 @@ package com.qreal.robots.service;
 
 import com.qreal.robots.dao.DiagramDAO;
 import com.qreal.robots.model.diagram.Diagram;
+import com.qreal.robots.model.diagram.DiagramRequest;
+import com.qreal.robots.model.diagram.Folder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -23,34 +25,39 @@ public class DiagramServiceImpl implements DiagramService {
 
     @Transactional
     @Override
-    public void save(Diagram diagram) {
+    public String saveDiagram(Diagram diagram) { return diagramDAO.save(diagram); }
+
+    @Transactional
+    @Override
+    public Diagram openDiagram(DiagramRequest request) {
+        return diagramDAO.openDiagram(request);
+    }
+
+    @Transactional
+    @Override
+    public String createFolder(Folder folder) {
         String creatorName = SecurityContextHolder.getContext().getAuthentication().getName();
-        diagram.setCreator(userService.findByUserName(creatorName));
-        diagramDAO.save(diagram);
+        folder.setCreator(userService.findByUserName(creatorName));
+        return diagramDAO.createFolder(folder);
     }
 
     @Transactional
     @Override
-    public Diagram openById(Long diagramId) {
-        return diagramDAO.openById(diagramId);
+    public List<String> showFoldersByUserName(String currentFolderId) {
+        return diagramDAO.showFoldersByUserName(currentFolderId);
     }
 
     @Transactional
     @Override
-    public Diagram openByName(String name) {
-        return diagramDAO.openByName(name);
+    public String getParentFolder(String currentFolderId) {
+        return diagramDAO.getParentFolder(currentFolderId);
     }
 
     @Transactional
     @Override
-    public List<String> showDiagramsByUserName() {
-        String creatorName = SecurityContextHolder.getContext().getAuthentication().getName();
-        return diagramDAO.showDiagramsByUserName(creatorName);
-    }
+    public String getUserName() { return SecurityContextHolder.getContext().getAuthentication().getName(); }
 
     @Transactional
     @Override
-    public boolean exists(String name) {
-        return diagramDAO.exists(name);
-    }
+    public List<String> showDiagramNames(String folderId) { return diagramDAO.showDiagramNames(folderId); }
 }
