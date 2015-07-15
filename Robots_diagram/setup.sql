@@ -10,7 +10,6 @@ DROP TABLE IF EXISTS properties;
 DROP TABLE IF EXISTS links;
 DROP TABLE IF EXISTS nodes;
 DROP TABLE IF EXISTS diagrams;
-DROP TABLE IF EXISTS folders;
 DROP TABLE IF EXISTS users;
 
 
@@ -21,19 +20,12 @@ CREATE TABLE users (
   PRIMARY KEY (username)
 );
 
-CREATE TABLE folders (
-  folder_id        VARCHAR(50) NOT NULL,
-  folder_name      VARCHAR(50) NOT NULL,
-  username         VARCHAR(45) NOT NULL,
-  folder_parent_id VARCHAR(50) NOT NULL,
-  FOREIGN KEY (username) REFERENCES users (username)
-);
-
 CREATE TABLE diagrams (
   diagram_id BIGINT      NOT NULL AUTO_INCREMENT,
   name       VARCHAR(50) NOT NULL,
-  folder_id  VARCHAR(50) NOT NULL,
-  PRIMARY KEY (diagram_id)
+  username   VARCHAR(50) NOT NULL,
+  PRIMARY KEY (diagram_id),
+  FOREIGN KEY (username) REFERENCES users (username)
 );
 
 CREATE TABLE nodes (
@@ -105,4 +97,4 @@ CREATE TABLE robots (
 INSERT INTO users (username, password, enabled)
 VALUES ('denis', '$2a$10$04TVADrR6/SPLBjsK0N30.Jf5fNjBugSACeGv1S69dZALR7lSov0y', TRUE);
 
-INSERT INTO user_roles (user name, ROLE) VALUES ('denis', 'ROLE_USER');
+INSERT INTO user_roles (username, ROLE) VALUES ('denis', 'ROLE_USER');

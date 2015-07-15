@@ -2,8 +2,6 @@ package com.qreal.robots.service;
 
 import com.qreal.robots.dao.DiagramDAO;
 import com.qreal.robots.model.diagram.Diagram;
-import com.qreal.robots.model.diagram.DiagramRequest;
-import com.qreal.robots.model.diagram.Folder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -25,39 +23,34 @@ public class DiagramServiceImpl implements DiagramService {
 
     @Transactional
     @Override
-    public String saveDiagram(Diagram diagram) { return diagramDAO.save(diagram); }
-
-    @Transactional
-    @Override
-    public Diagram openDiagram(DiagramRequest request) {
-        return diagramDAO.openDiagram(request);
-    }
-
-    @Transactional
-    @Override
-    public String createFolder(Folder folder) {
+    public void save(Diagram diagram) {
         String creatorName = SecurityContextHolder.getContext().getAuthentication().getName();
-        folder.setCreator(userService.findByUserName(creatorName));
-        return diagramDAO.createFolder(folder);
+        diagram.setCreator(userService.findByUserName(creatorName));
+        diagramDAO.save(diagram);
     }
 
     @Transactional
     @Override
-    public List<String> showFoldersByUserName(String currentFolderId) {
-        return diagramDAO.showFoldersByUserName(currentFolderId);
+    public Diagram openById(Long diagramId) {
+        return diagramDAO.openById(diagramId);
     }
 
     @Transactional
     @Override
-    public String getParentFolder(String currentFolderId) {
-        return diagramDAO.getParentFolder(currentFolderId);
+    public Diagram openByName(String name) {
+        return diagramDAO.openByName(name);
     }
 
     @Transactional
     @Override
-    public String getUserName() { return SecurityContextHolder.getContext().getAuthentication().getName(); }
+    public List<String> showDiagramsByUserName() {
+        String creatorName = SecurityContextHolder.getContext().getAuthentication().getName();
+        return diagramDAO.showDiagramsByUserName(creatorName);
+    }
 
     @Transactional
     @Override
-    public List<String> showDiagramNames(String folderId) { return diagramDAO.showDiagramNames(folderId); }
+    public boolean exists(String name) {
+        return diagramDAO.exists(name);
+    }
 }
