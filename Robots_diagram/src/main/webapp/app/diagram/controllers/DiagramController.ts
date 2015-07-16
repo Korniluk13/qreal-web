@@ -21,6 +21,7 @@ class DiagramController {
     private folderLevel: number;
     private currentDiagramName: string;
     private currentDiagramFolderId: string;
+    private canBeDeleted: boolean;
 
     constructor($scope, $compile) {
 
@@ -39,6 +40,7 @@ class DiagramController {
         this.folderLevel = 0;
         this.currentDiagramFolderId = "";
         this.currentDiagramName = "";
+        this.canBeDeleted = false;
 
         var user: string;
         $.ajax({
@@ -60,9 +62,7 @@ class DiagramController {
             dataType: 'text',
             contentType: 'application/json',
             data: (ExportManager.exportFolderToJSON(this.currentFolderId, "root", "")),
-            success: function (response) {
-                console.log(response);
-            },
+            success: function () {},
             error: function (response, status, error) {
                 console.log("error: " + status + " " + error);
             }
@@ -399,16 +399,24 @@ class DiagramController {
         this.linksMap[linkId] = linkObject;
     }
 
-    private clear = function() {
+    private clearScene(): void {
         this.graph.clear();
         this.nodesMap = {};
         this.linksMap = {};
         $(".property").remove();
         this.currentElement = undefined;
+        this.canBeDeleted = false;
+    }
+
+    private clearAll(): void {
+        this.clearScene();
+        this.currentDiagramName = "";
+        this.currentDiagramFolderId = "";
     }
 
     private saveDiagram(diagramName: string): boolean {
         var saved: boolean = false;
+        var controller = this;
         this.currentDiagramName = diagramName;
         this.currentDiagramFolderId = this.currentFolderId;
         $.ajax({
@@ -420,6 +428,9 @@ class DiagramController {
             data: (ExportManager.exportDiagramStateToJSON(diagramName, this.currentFolderId, this.nodesMap, this.linksMap)),
             success: function (response) {
                 console.log(response);
+                if (controller.canBeDeleted) {
+                    controller.clearAll();
+                }
                 saved = (response === "OK");
             },
             error: function (response, status, error) {
@@ -430,7 +441,8 @@ class DiagramController {
     }
 
     private saveCurrentDiagram(): void {
-        if(this.currentDiagramName === "") {
+        var controller = this;
+        if (this.currentDiagramName === "") {
             this.saveDiagramAs();
             $('#diagrams').modal('show');
         }
@@ -444,6 +456,9 @@ class DiagramController {
                 data: (ExportManager.exportDiagramStateToJSON(this.currentDiagramName, this.currentDiagramFolderId, this.nodesMap, this.linksMap)),
                 success: function (response) {
                     console.log(response);
+                    if (controller.canBeDeleted) {
+                        controller.clearAll();
+                    }
                 },
                 error: function (response, status, error) {
                     console.log("error: " + status + " " + error);
@@ -458,13 +473,14 @@ class DiagramController {
         this.currentDiagramFolderId = this.currentFolderId;
         this.currentFolderId = this.user + "root_0";
         $.ajax({
+            async: false,
             type: 'POST',
             url: 'openDiagram',
             dataType: 'json',
             contentType: 'application/json',
             data: (ExportManager.exportDiagramRequestToJSON(diagramName, this.currentFolderId)),
             success: function (response) {
-                controller.clear();
+                controller.clearScene();
                 ImportManager.import(response, controller.graph, controller.nodesMap,
                     controller.linksMap, controller.nodeTypesMap);
             },
@@ -480,13 +496,10 @@ class DiagramController {
     private createNewDiagram(): void {
         var controller = this;
         $('#confirmNew').modal('show');
-        $('#confirmNew button').click(function() {
-            $('#confirmNew').modal('hide');
-        });
-        $('#saveAfterCreate').click(function() {
+
+        $('#saveAfterCreate').click(function () {
+            controller.canBeDeleted = true;
             controller.saveCurrentDiagram();
-            controller.currentDiagramName = "";
-            controller.currentDiagramFolderId = "";
         });
     }
 
