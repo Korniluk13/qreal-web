@@ -151,8 +151,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
-            <div id="controll_buttons_container">
+                <div id="controll_buttons_container">
                 <table class="twoDModel_table">
                     <tr>
                         <td>
@@ -214,6 +213,7 @@
                         </td>
                     </tr>
                 </table>
+            </div>
             </div>
         </div>
 

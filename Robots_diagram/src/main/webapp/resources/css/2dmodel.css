@@ -13,11 +13,12 @@
 
 #twoDModel_left-menu, #twoDModel_right-menu {
     position: absolute;
-    width: 260px; /*Width of left frame div*/
+    width: 280px; /*Width of left frame div*/
     top: 70px;
     left: 10px;
     bottom: 10px;
-    overflow: hidden; /*Disable scrollbars. Set to "scroll" to enable*/
+    overflow-x: hidden;
+    overflow-y: scroll; /*Disable scrollbars. Set to "scroll" to enable*/
     text-align: center;
 }
 
@@ -35,7 +36,7 @@
 #twoDModel_stage {
     position: fixed;
     top: 70px;
-    left: 280px;
+    left: 300px;
     right: 230px;
     bottom: 10px;
     overflow: auto;
@@ -52,7 +53,7 @@
     left: 0px;
     top: 0px;
     right: 0px;
-    bottom: 210px;
+    height: 700px;
 }
 
 #twoDModel_palette {
@@ -64,6 +65,7 @@
     padding-top: 10px;
     border: 1px solid gray;
     background: #ffffff;
+    height: 400px;
 }
 
 #controll_buttons_container {
@@ -112,4 +114,3 @@ ul.nav.nav-tabs li a {
 #configurationDropdowns {
     overflow: auto;
 }
-
