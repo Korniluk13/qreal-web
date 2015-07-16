@@ -76,6 +76,7 @@ body{
     background: #ffffff url('bg.png');
     border: 1px solid gray;
     margin-bottom: 10px;
+    overflow: scroll;
 }
 
 .elementImg {

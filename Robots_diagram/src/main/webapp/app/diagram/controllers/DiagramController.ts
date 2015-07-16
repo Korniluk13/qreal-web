@@ -399,7 +399,7 @@ class DiagramController {
         this.linksMap[linkId] = linkObject;
     }
 
-    private clear(): void {
+    private clear = function() {
         this.graph.clear();
         this.nodesMap = {};
         this.linksMap = {};
@@ -487,9 +487,7 @@ class DiagramController {
             controller.saveCurrentDiagram();
             controller.currentDiagramName = "";
             controller.currentDiagramFolderId = "";
-            controller.clear();
         });
-
     }
 
     private openFolderWindow(): void {
@@ -554,7 +552,7 @@ class DiagramController {
             }
             else{
                 if (controller.saveDiagram(name)) {
-                    controller.currentFolderId = this.user + "root_0";
+                    controller.currentFolderId = controller.user + "root_0";
                     controller.folderLevel = 0;
                     $('#diagrams').modal('hide');
                 }
