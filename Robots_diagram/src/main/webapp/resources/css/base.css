@@ -223,6 +223,10 @@ body{
     font-size: 25px;
 }
 
+.folderMenu > i {
+    cursor: pointer;
+}
+
 #creating {
     color: forestgreen;
 }

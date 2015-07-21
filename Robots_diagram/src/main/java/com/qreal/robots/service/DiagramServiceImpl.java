@@ -25,7 +25,7 @@ public class DiagramServiceImpl implements DiagramService {
 
     @Transactional
     @Override
-    public String saveDiagram(Diagram diagram) { return diagramDAO.save(diagram); }
+    public boolean saveDiagram(Diagram diagram) { return diagramDAO.save(diagram); }
 
     @Transactional
     @Override
@@ -39,7 +39,7 @@ public class DiagramServiceImpl implements DiagramService {
 
     @Transactional
     @Override
-    public String createFolder(Folder folder) {
+    public boolean createFolder(Folder folder) {
         String creatorName = SecurityContextHolder.getContext().getAuthentication().getName();
         folder.setCreator(userService.findByUserName(creatorName));
         return diagramDAO.createFolder(folder);
@@ -47,15 +47,7 @@ public class DiagramServiceImpl implements DiagramService {
 
     @Transactional
     @Override
-    public List<String> showFoldersByUserName(String currentFolderId) {
-        return diagramDAO.showFoldersByUserName(currentFolderId);
-    }
-
-    @Transactional
-    @Override
-    public String getParentFolder(String currentFolderId) {
-        return diagramDAO.getParentFolder(currentFolderId);
-    }
+    public List<String> getFolderNames(String currentFolderId) { return diagramDAO.getFolderNames(currentFolderId); }
 
     @Transactional
     @Override
@@ -63,5 +55,5 @@ public class DiagramServiceImpl implements DiagramService {
 
     @Transactional
     @Override
-    public List<String> showDiagramNames(String folderId) { return diagramDAO.showDiagramNames(folderId); }
+    public List<String> getDiagramNames(String folderId) { return diagramDAO.getDiagramNames(folderId); }
 }

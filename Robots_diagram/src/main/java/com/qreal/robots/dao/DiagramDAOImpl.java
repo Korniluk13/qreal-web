@@ -29,28 +29,27 @@ public class DiagramDAOImpl implements DiagramDAO {
         this.sessionFactory = sessionFactory;
     }
 
-    public String save(Diagram diagram) {
+    public boolean save(Diagram diagram) {
         LOG.debug("saving diagram");
         Session session = sessionFactory.getCurrentSession();
-        List<Diagram> diagrams = session.createQuery("from Diagram where folderId=? and name=?")
-                .setParameter(0, diagram.getFolderId())
-                .setParameter(1, diagram.getName())
+        List<Diagram> diagrams = session.createQuery("from Diagram where folderId=:folderId and name=:name")
+                .setParameter("folderId", diagram.getFolderId())
+                .setParameter("name", diagram.getName())
                 .list();
 
-        if (!diagrams.isEmpty()) {
-            return "This diagram already exists.";
-        }
-        else {
+        if (diagrams.isEmpty()) {
             session.save(diagram);
-            return "OK";
+            return true;
         }
+
+        return false;
     }
 
     public Diagram openDiagram(DiagramRequest request) {
         Session session = sessionFactory.getCurrentSession();
-        List<Diagram> diagrams = session.createQuery("from Diagram where name=? and folderId=?")
-                .setParameter(0, request.getDiagramName())
-                .setParameter(1, request.getFolderId())
+        List<Diagram> diagrams = session.createQuery("from Diagram where name=:name and folderId=:folderId")
+                .setParameter("name", request.getDiagramName())
+                .setParameter("folderId", request.getFolderId())
                 .list();
 
         return diagrams.get(0);
@@ -58,38 +57,33 @@ public class DiagramDAOImpl implements DiagramDAO {
 
     public String rewriteDiagram(Diagram diagram) {
         Session session = sessionFactory.getCurrentSession();
-        List<Diagram> diagrams = session.createQuery("from Diagram where folderId=? and name=?")
-                .setParameter(0, diagram.getFolderId())
-                .setParameter(1, diagram.getName())
+        session.createQuery("delete from Diagram where folderId=:folderId and name=:name")
+                .setParameter("folderId", diagram.getFolderId())
+                .setParameter("name", diagram.getName())
                 .list();
 
-        session.delete(diagrams.get(0));
         session.save(diagram);
         return("OK");
     }
 
-    public String createFolder(Folder folder) {
+    public boolean createFolder(Folder folder) {
         LOG.debug("creating folder");
         Session session = sessionFactory.getCurrentSession();
-        List<Folder> folders = session.createQuery("from Folder where folderId=? and folderParentId=? and folderName=?")
-                .setParameter(0, folder.getFolderId())
-                .setParameter(1, folder.getFolderParentId())
-                .setParameter(2, folder.getFolderName())
+        List<Folder> folders = session.createQuery("from Folder where folderId=:folderId")
+                .setParameter("folderId", folder.getFolderId())
                 .list();
 
         if (folders.isEmpty()) {
             session.save(folder);
-            return "OK";
+            return true;
         }
-        else {
-            return "This folder already exists.";
-        }
+        return false;
     }
 
-    public List<String> showFoldersByUserName(String currentFolderId) {
+    public List<String> getFolderNames(String currentFolderId) {
         Session session = sessionFactory.getCurrentSession();
-        List<Folder> folders = session.createQuery("from Folder where folderParentId=?")
-                .setParameter(0, currentFolderId)
+        List<Folder> folders = session.createQuery("from Folder where folderParentId=:folderParentId")
+                .setParameter("folderParentId", currentFolderId)
                 .list();
 
         List<String> folderNames = new ArrayList<String>();
@@ -99,18 +93,10 @@ public class DiagramDAOImpl implements DiagramDAO {
         return folderNames;
     }
 
-    public String getParentFolder(String currentFolderId) {
+    public List<String> getDiagramNames(String folderId) {
         Session session = sessionFactory.getCurrentSession();
-        List<Folder> folders = session.createQuery("from Folder where folderId=?")
-                .setParameter(0, currentFolderId)
-                .list();
-
-        return folders.get(0).getFolderParentId();
-    }
-
-    public List<String> showDiagramNames(String folderId) {
-        Session session = sessionFactory.getCurrentSession();
-        List<Diagram> diagrams = session.createQuery("from Diagram where folderId=?").setParameter(0, folderId).list();
+        List<Diagram> diagrams = session.createQuery("from Diagram where folderId=:folderId")
+                .setParameter("folderId", folderId).list();
 
         List<String> namesDiagrams = new ArrayList<String>();
         for (Diagram diagram : diagrams) {
