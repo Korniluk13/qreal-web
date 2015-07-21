@@ -72,24 +72,19 @@ class DiagramMenuController {
             contentType: 'application/json',
             data: (ExportManager.exportDiagramStateToJSON(diagramName, this.currentFolderId,
                 this.diagramController.nodesMap, this.diagramController.linksMap)),
-            success: function (response) {
-                if (response === "OK") {
-                    menuController.currentFolderId = menuController.user + "root_0";
-                    menuController.pathToFolder = [];
-                    menuController.pathToFolder = [menuController.currentFolderId];
-                    $('#diagrams').modal('hide');
+            success: function () {
+                menuController.currentFolderId = menuController.user + "root_0";
+                menuController.pathToFolder = [];
+                menuController.pathToFolder = [menuController.currentFolderId];
+                $('#diagrams').modal('hide');
 
-                    if (menuController.canBeDeleted) {
-                        menuController.clearAll();
-                    }
-                }
-                else {
-                    menuController.writeWarning(response, '.savingMenu');
-                    $('.savingMenu input:text').val('');
+                if (menuController.canBeDeleted) {
+                    menuController.clearAll();
                 }
             },
-            error: function (response, status, error) {
-                console.log("error: " + status + " " + error);
+            error: function (response) {
+                menuController.writeWarning(response.responseText, '.savingMenu');
+                $('.savingMenu input:text').val('');
             }
         });
     }
@@ -305,18 +300,13 @@ class DiagramMenuController {
                 dataType: 'text',
                 contentType: 'application/json',
                 data: (ExportManager.exportFolderToJSON(folderId, name, this.currentFolderId)),
-                success: function (response) {
-                    if (response === "OK") {
-                        menuController.showFolderMenu();
-                        menuController.showFolderTable(menuController.currentFolderId);
-                    }
-                    else {
-                        menuController.writeWarning(response, '.folderMenu');
-                        $('.folderMenu input:text').val('');
-                    }
+                success: function () {
+                    menuController.showFolderMenu();
+                    menuController.showFolderTable(menuController.currentFolderId);
                 },
-                error: function (response, status, error) {
-                    console.log("error: " + status + " " + error);
+                error: function (response) {
+                    menuController.writeWarning(response.responseText, '.folderMenu');
+                    $('.folderMenu input:text').val('');;
                 }
             });
         }
