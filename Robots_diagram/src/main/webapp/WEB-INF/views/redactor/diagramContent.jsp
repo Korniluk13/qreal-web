@@ -17,10 +17,10 @@
                     <li class="dropdown">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown">File<b class="caret"></b></a>
                         <ul class="dropdown-menu">
-                            <li><a href="" role="menuitem" tabindex="-1" ng-click="vm.menuController.createNewDiagram()">New</a></li>
-                            <li><a href="" role="menuitem" tabindex="-1" data-toggle="modal" data-target="#diagrams" ng-click="vm.menuController.openFolderWindow()">Open</a></li>
-                            <li><a href="" role="menuitem" tabindex="-1" ng-click="vm.menuController.saveCurrentDiagram()">Save</a></li>
-                            <li><a href="" role="menuitem" tabindex="-1" data-toggle="modal" data-target="#diagrams" ng-click="vm.menuController.saveDiagramAs()">SaveAs</a></li>
+                            <li><a href="" role="menuitem" tabindex="-1" ng-click="vm.menuManager.createNewDiagram()">New</a></li>
+                            <li><a href="" role="menuitem" tabindex="-1" data-toggle="modal" data-target="#diagrams" ng-click="vm.menuManager.openFolderWindow()">Open</a></li>
+                            <li><a href="" role="menuitem" tabindex="-1" ng-click="vm.menuManager.saveCurrentDiagram()">Save</a></li>
+                            <li><a href="" role="menuitem" tabindex="-1" data-toggle="modal" data-target="#diagrams" ng-click="vm.menuManager.saveDiagramAs()">SaveAs</a></li>
                         </ul>
                     </li>
                     <li>

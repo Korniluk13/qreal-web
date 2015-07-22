@@ -9,6 +9,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import javax.management.Query;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -57,11 +58,13 @@ public class DiagramDAOImpl implements DiagramDAO {
 
     public String rewriteDiagram(Diagram diagram) {
         Session session = sessionFactory.getCurrentSession();
-        session.createQuery("delete from Diagram where folderId=:folderId and name=:name")
+
+        List<Diagram> diagrams = session.createQuery("from Diagram where folderId=:folderId and name=:name")
                 .setParameter("folderId", diagram.getFolderId())
                 .setParameter("name", diagram.getName())
                 .list();
 
+        session.delete(diagrams.get(0));
         session.save(diagram);
         return("OK");
     }

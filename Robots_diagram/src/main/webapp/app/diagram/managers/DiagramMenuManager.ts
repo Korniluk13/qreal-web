@@ -1,4 +1,4 @@
-class DiagramMenuController {
+class DiagramMenuManager {
     private diagramController;
     private currentFolderId: string;
     private user: string;
@@ -13,15 +13,15 @@ class DiagramMenuController {
         this.currentDiagramName = "";
         this.canBeDeleted = false;
 
-        var menuController = this;
+        var menuManager = this;
         $.ajax({
             type: 'POST',
             url: 'getUser',
             dataType: 'text',
             success: function (response) {
-                menuController.user = response;
-                menuController.currentFolderId = menuController.user + "root_0";
-                menuController.pathToFolder = [];
+                menuManager.user = response;
+                menuManager.currentFolderId = menuManager.user + "root_0";
+                menuManager.pathToFolder = [];
             },
             error: function (response, status, error) {
                 console.log("error: " + status + " " + error);
@@ -44,12 +44,12 @@ class DiagramMenuController {
 
         $(document).ready(function() {
             $('.modal-footer button').click(function() {
-                menuController.currentFolderId = menuController.user + "root_0";
-                menuController.pathToFolder = [];
+                menuManager.currentFolderId = menuManager.user + "root_0";
+                menuManager.pathToFolder = [];
             });
             $('#saveAfterCreate').click(function () {
-                menuController.canBeDeleted = true;
-                menuController.saveCurrentDiagram();
+                menuManager.canBeDeleted = true;
+                menuManager.saveCurrentDiagram();
             });
         });
     }
@@ -62,7 +62,7 @@ class DiagramMenuController {
     }
 
     private saveDiagram(diagramName: string): void {
-        var menuController = this;
+        var menuManager = this;
         this.currentDiagramName = diagramName;
         this.currentDiagramFolderId = this.currentFolderId;
         $.ajax({
@@ -73,24 +73,25 @@ class DiagramMenuController {
             data: (ExportManager.exportDiagramStateToJSON(diagramName, this.currentFolderId,
                 this.diagramController.nodesMap, this.diagramController.linksMap)),
             success: function () {
-                menuController.currentFolderId = menuController.user + "root_0";
-                menuController.pathToFolder = [];
-                menuController.pathToFolder = [menuController.currentFolderId];
+                menuManager.currentFolderId = menuManager.user + "root_0";
+                menuManager.pathToFolder = [];
+                menuManager.pathToFolder = [menuManager.currentFolderId];
                 $('#diagrams').modal('hide');
 
-                if (menuController.canBeDeleted) {
-                    menuController.clearAll();
+                if (menuManager.canBeDeleted) {
+                    menuManager.clearAll();
                 }
             },
-            error: function (response) {
-                menuController.writeWarning(response.responseText, '.savingMenu');
+            error: function (response, status, error) {
+                menuManager.writeWarning(response.responseText, '.savingMenu');
                 $('.savingMenu input:text').val('');
+                console.log("error: " + status + " " + error);
             }
         });
     }
 
     private saveCurrentDiagram(): void {
-        var controller = this;
+        var menuManager = this;
         if (this.currentDiagramName === "") {
             $('#diagrams').modal('show');
             this.saveDiagramAs();
@@ -105,8 +106,8 @@ class DiagramMenuController {
                     this.diagramController.nodesMap, this.diagramController.linksMap)),
                 success: function (response) {
                     console.log(response);
-                    if (controller.canBeDeleted) {
-                        controller.clearAll();
+                    if (menuManager.canBeDeleted) {
+                        menuManager.clearAll();
                     }
                 },
                 error: function (response, status, error) {
@@ -117,7 +118,7 @@ class DiagramMenuController {
     }
 
     private openDiagram(diagramName: string): void {
-        var menuController = this;
+        var menuManager = this;
         this.currentDiagramName = diagramName;
         this.currentDiagramFolderId = this.currentFolderId;
         this.currentFolderId = this.user + "root_0";
@@ -129,9 +130,9 @@ class DiagramMenuController {
             contentType: 'application/json',
             data: (ExportManager.exportDiagramRequestToJSON(diagramName, this.currentDiagramFolderId)),
             success: function (response) {
-                menuController.diagramController.clearScene();
-                ImportManager.import(response, menuController.diagramController.graph, menuController.diagramController.nodesMap,
-                    menuController.diagramController.linksMap, menuController.diagramController.nodeTypesMap);
+                menuManager.diagramController.clearScene();
+                ImportManager.import(response, menuManager.diagramController.graph, menuManager.diagramController.nodesMap,
+                    menuManager.diagramController.linksMap, menuManager.diagramController.nodeTypesMap);
             },
             error: function (response, status, error) {
                 if (status === "parsererror") {
@@ -143,7 +144,7 @@ class DiagramMenuController {
     }
 
     private createNewDiagram(): void {
-        var controller = this;
+        var menuManageroller = this;
         $('#confirmNew').modal('show');
     }
 
@@ -161,20 +162,20 @@ class DiagramMenuController {
 
     private showFolderMenu(): void {
         this.clearFolderMenu();
-        var menuController = this;
+        var menuManager = this;
         $('.folderMenu').append("<i id='levelUp'><span class='glyphicon glyphicon-arrow-left'></span></i>");
         $('.folderMenu #levelUp').click(function() {
-            menuController.levelUpFolder();
+            menuManager.levelUpFolder();
         });
 
         $('.folderMenu').append("<i id='creatingMenu'><span class='glyphicon glyphicon-plus'></span></i>");
         $('.folderMenu #creatingMenu').click(function() {
-            menuController.showCreatingMenu();
+            menuManager.showCreatingMenu();
         });
     }
 
     private showCreatingMenu() {
-        var menuController = this;
+        var menuManager = this;
         this.clearFolderMenu();
         $('.folderMenu').append(
             "<input type='text'>" +
@@ -182,30 +183,30 @@ class DiagramMenuController {
             "<i id='cancelCreating'><span class='glyphicon glyphicon-remove'></span></i>");
 
         $('.folderMenu #creating').click(function() {
-            menuController.clearWarning('.folderMenu p');
-            menuController.createFolder();
+            menuManager.clearWarning('.folderMenu p');
+            menuManager.createFolder();
         });
 
         $('.folderMenu #cancelCreating').click(function() {
-            menuController.showFolderMenu();
+            menuManager.showFolderMenu();
         });
     }
 
     private showSavingMenu(): void {
         this.clearSavingMenu();
-        var menuController = this;
+        var menuManager = this;
 
         $('.savingMenu').append("<b>Input diagram name</b><input type:text>");
         $('#diagrams .modal-footer').prepend("<button id='saving' type='button' class='btn btn-success'>Save</button>");
 
         $('#saving').click(function() {
-            menuController.clearWarning('.savingMenu p');
+            menuManager.clearWarning('.savingMenu p');
             var name: string = $('.savingMenu input:text').val();
             if (name === "") {
-                menuController.writeWarning("Empty name", '.savingMenu');
+                menuManager.writeWarning("Empty name", '.savingMenu');
             }
             else{
-                menuController.saveDiagram(name);
+                menuManager.saveDiagram(name);
             }
         });
     }
@@ -234,7 +235,7 @@ class DiagramMenuController {
     private showFolderTable(openingFolderId: string): void {
         this.clearFolderTable();
         this.currentFolderId = openingFolderId;
-        var menuController = this;
+        var menuManager = this;
         $.ajax({
             type: 'POST',
             url: 'getFolderNames',
@@ -247,9 +248,9 @@ class DiagramMenuController {
                         "<span class='glyphicon-class'>" + response[i] + "</span></li>");
                 });
                 $('.folderTable .folders').click(function () {
-                    var folderId: string = menuController.user + $(this).text() + "_" + menuController.pathToFolder.length;
-                    menuController.pathToFolder.push(menuController.currentFolderId);
-                    menuController.showFolderTable(folderId);
+                    var folderId: string = menuManager.user + $(this).text() + "_" + menuManager.pathToFolder.length;
+                    menuManager.pathToFolder.push(menuManager.currentFolderId);
+                    menuManager.showFolderTable(folderId);
                 });
             },
             error: function (response, status, error) {
@@ -268,7 +269,7 @@ class DiagramMenuController {
                         "<span class='glyphicon-class'>" + response[i] + "</span></li>");
                 });
                 $('.folderTable .diagrams').click(function () {
-                    menuController.openDiagram($(this).text());
+                    menuManager.openDiagram($(this).text());
                     $('#diagrams').modal('hide');
                 });
             },
@@ -287,7 +288,7 @@ class DiagramMenuController {
 
     private createFolder() : void {
         var name: string = $('.folderMenu input:text').val();
-        var menuController = this;
+        var menuManager = this;
         var newFolderLevel: number = this.pathToFolder.length;
         var folderId: string = this.user + name + "_" + newFolderLevel;
         if (name === "") {
@@ -301,15 +302,15 @@ class DiagramMenuController {
                 contentType: 'application/json',
                 data: (ExportManager.exportFolderToJSON(folderId, name, this.currentFolderId)),
                 success: function () {
-                    menuController.showFolderMenu();
-                    menuController.showFolderTable(menuController.currentFolderId);
+                    menuManager.showFolderMenu();
+                    menuManager.showFolderTable(menuManager.currentFolderId);
                 },
-                error: function (response) {
-                    menuController.writeWarning(response.responseText, '.folderMenu');
-                    $('.folderMenu input:text').val('');;
+                error: function (response, status, error) {
+                    menuManager.writeWarning(response.responseText, '.folderMenu');
+                    $('.folderMenu input:text').val('');
+                    console.log("error: " + status + " " + error);
                 }
             });
         }
     }
 }
-

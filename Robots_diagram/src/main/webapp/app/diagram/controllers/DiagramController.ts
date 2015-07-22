@@ -16,7 +16,7 @@ class DiagramController {
     private date : Date = new Date();
     private data : Gesture[];
     private flagAdd : boolean;
-    private menuController: DiagramMenuController;
+    private menuManager: DiagramMenuManager;
 
     constructor($scope, $compile) {
 
@@ -33,7 +33,7 @@ class DiagramController {
         this.initDeleteListener();
         this.initCustomContextMenu();
 
-        this.menuController = new DiagramMenuController($scope);
+        this.menuManager = new DiagramMenuManager($scope);
 
         $scope.$on("interpret", function(event, timeline) {
             console.log(InterpretManager.interpret(controller.graph, controller.nodesMap, controller.linksMap, timeline));
