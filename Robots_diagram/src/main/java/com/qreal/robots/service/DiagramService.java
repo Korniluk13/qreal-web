@@ -21,7 +21,5 @@ public interface DiagramService {
 
     public List<String> getFolderNames(String currentFolderId);
 
-    public String getUserName();
-
     public List<String> getDiagramNames(String folderId);
 }

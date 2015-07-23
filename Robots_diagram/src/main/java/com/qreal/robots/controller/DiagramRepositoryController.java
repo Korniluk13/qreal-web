@@ -86,8 +86,4 @@ public class DiagramRepositoryController {
     public List<String> getFolderNames(@RequestBody OpenRequest request) {
         return diagramService.getFolderNames(request.getName());
     }
-
-    @ResponseBody
-    @RequestMapping(value = "/getUser", method = RequestMethod.POST)
-    public String getUserName() { return diagramService.getUserName(); }
 }

@@ -1,7 +1,6 @@
 class DiagramMenuManager {
     private diagramController;
-    private currentFolderId: string;
-    private user: string;
+    private currentFolder: string;
     private currentDiagramName: string;
     private currentDiagramFolderId: string;
     private canBeDeleted: boolean;
@@ -12,28 +11,17 @@ class DiagramMenuManager {
         this.currentDiagramFolderId = "";
         this.currentDiagramName = "";
         this.canBeDeleted = false;
+        this.pathToFolder = [];
+        this.currentFolder = "root";
 
         var menuManager = this;
-        $.ajax({
-            type: 'POST',
-            url: 'getUser',
-            dataType: 'text',
-            success: function (response) {
-                menuManager.user = response;
-                menuManager.currentFolderId = menuManager.user + "root_0";
-                menuManager.pathToFolder = [];
-            },
-            error: function (response, status, error) {
-                console.log("error: " + status + " " + error);
-            }
-        });
 
         $.ajax({
             type: 'POST',
             url: 'createFolder',
             dataType: 'text',
             contentType: 'application/json',
-            data: (ExportManager.exportFolderToJSON(this.currentFolderId, "root", "")),
+            data: (ExportManager.exportFolderToJSON("root_0", "root", "")),
             success: function () {
                 console.log("OK");
             },
@@ -44,7 +32,7 @@ class DiagramMenuManager {
 
         $(document).ready(function() {
             $('.modal-footer button').click(function() {
-                menuManager.currentFolderId = menuManager.user + "root_0";
+                menuManager.currentFolder = "root";
                 menuManager.pathToFolder = [];
             });
             $('#saveAfterCreate').click(function () {
@@ -64,18 +52,20 @@ class DiagramMenuManager {
     private saveDiagram(diagramName: string): void {
         var menuManager = this;
         this.currentDiagramName = diagramName;
-        this.currentDiagramFolderId = this.currentFolderId;
+        var currentFolderId = this.currentFolder + "_" + this.pathToFolder.length;
+        this.currentDiagramFolderId = currentFolderId;
         $.ajax({
             type: 'POST',
             url: 'saveDiagram',
             dataType: 'text',
             contentType: 'application/json',
-            data: (ExportManager.exportDiagramStateToJSON(diagramName, this.currentFolderId,
+            data: (ExportManager.exportDiagramStateToJSON(diagramName, currentFolderId,
                 this.diagramController.nodesMap, this.diagramController.linksMap)),
-            success: function () {
-                menuManager.currentFolderId = menuManager.user + "root_0";
+            success: function (response) {
+                console.log(response);
+                menuManager.currentFolder = "root";
                 menuManager.pathToFolder = [];
-                menuManager.pathToFolder = [menuManager.currentFolderId];
+                console.log(menuManager.pathToFolder.length);
                 $('#diagrams').modal('hide');
 
                 if (menuManager.canBeDeleted) {
@@ -120,8 +110,9 @@ class DiagramMenuManager {
     private openDiagram(diagramName: string): void {
         var menuManager = this;
         this.currentDiagramName = diagramName;
-        this.currentDiagramFolderId = this.currentFolderId;
-        this.currentFolderId = this.user + "root_0";
+        var currentFolderId = this.currentFolder + "_" + this.pathToFolder.length;
+        this.currentDiagramFolderId = currentFolderId;
+        this.currentFolder = "root";
         this.pathToFolder = [];
         $.ajax({
             type: 'POST',
@@ -144,19 +135,18 @@ class DiagramMenuManager {
     }
 
     private createNewDiagram(): void {
-        var menuManageroller = this;
         $('#confirmNew').modal('show');
     }
 
     private openFolderWindow(): void {
         this.showFolderMenu();
-        this.showFolderTable(this.currentFolderId);
+        this.showFolderTable(this.currentFolder);
         this.clearSavingMenu();
     }
 
     private saveDiagramAs(): void {
         this.showFolderMenu();
-        this.showFolderTable(this.currentFolderId);
+        this.showFolderTable(this.currentFolder);
         this.showSavingMenu();
     }
 
@@ -232,25 +222,27 @@ class DiagramMenuManager {
         $(place).remove();
     }
 
-    private showFolderTable(openingFolderId: string): void {
+    private showFolderTable(openingFolder: string): void {
         this.clearFolderTable();
-        this.currentFolderId = openingFolderId;
+        this.currentFolder = openingFolder;
+        var currentFolderId = this.currentFolder + "_" + this.pathToFolder.length;
         var menuManager = this;
+        console.log(currentFolderId);
         $.ajax({
             type: 'POST',
             url: 'getFolderNames',
             dataType: 'json',
             contentType: 'application/json',
-            data: (JSON.stringify({name: this.currentFolderId})),
+            data: (JSON.stringify({name: currentFolderId})),
             success: function (response) {
+                console.log(response);
                 $.each(response, function (i) {
                     $('.folderView ul').prepend("<li class='folders'><span class='glyphicon glyphicon-folder-open' aria-hidden='true'></span>" +
                         "<span class='glyphicon-class'>" + response[i] + "</span></li>");
                 });
                 $('.folderTable .folders').click(function () {
-                    var folderId: string = menuManager.user + $(this).text() + "_" + menuManager.pathToFolder.length;
-                    menuManager.pathToFolder.push(menuManager.currentFolderId);
-                    menuManager.showFolderTable(folderId);
+                    menuManager.pathToFolder.push(menuManager.currentFolder);
+                    menuManager.showFolderTable($(this).text());
                 });
             },
             error: function (response, status, error) {
@@ -262,8 +254,9 @@ class DiagramMenuManager {
             url: 'getDiagramNames',
             dataType: 'json',
             contentType: 'application/json',
-            data: (JSON.stringify({name: this.currentFolderId})),
+            data: (JSON.stringify({name: currentFolderId})),
             success: function(response) {
+                //console.log(response);
                 $.each(response, function (i) {
                     $('.folderView ul').append("<li class='diagrams'><span class='glyphicon glyphicon-file' aria-hidden='true'></span>" +
                         "<span class='glyphicon-class'>" + response[i] + "</span></li>");
@@ -289,8 +282,9 @@ class DiagramMenuManager {
     private createFolder() : void {
         var name: string = $('.folderMenu input:text').val();
         var menuManager = this;
-        var newFolderLevel: number = this.pathToFolder.length;
-        var folderId: string = this.user + name + "_" + newFolderLevel;
+        var newFolderLevel: number = this.pathToFolder.length + 1;
+        var newfolderId: string = name + "_" + newFolderLevel;
+        var currentFolderId: string = this.currentFolder + "_" + this.pathToFolder.length;
         if (name === "") {
             this.writeWarning("Empty name", '.folderMenu');
         }
@@ -300,10 +294,10 @@ class DiagramMenuManager {
                 url: 'createFolder',
                 dataType: 'text',
                 contentType: 'application/json',
-                data: (ExportManager.exportFolderToJSON(folderId, name, this.currentFolderId)),
+                data: (ExportManager.exportFolderToJSON(newfolderId, name, currentFolderId)),
                 success: function () {
                     menuManager.showFolderMenu();
-                    menuManager.showFolderTable(menuManager.currentFolderId);
+                    menuManager.showFolderTable(menuManager.currentFolder);
                 },
                 error: function (response, status, error) {
                     menuManager.writeWarning(response.responseText, '.folderMenu');

@@ -25,35 +25,51 @@ public class DiagramServiceImpl implements DiagramService {
 
     @Transactional
     @Override
-    public boolean saveDiagram(Diagram diagram) { return diagramDAO.save(diagram); }
+    public boolean saveDiagram(Diagram diagram) {
+        diagram.setFolderId(addUserToId(diagram.getFolderId()));
+        return diagramDAO.save(diagram);
+    }
 
     @Transactional
     @Override
     public Diagram openDiagram(DiagramRequest request) {
+        request.setFolderId(addUserToId(request.getFolderId()));
         return diagramDAO.openDiagram(request);
     }
 
     @Transactional
     @Override
-    public String rewriteDiagram(Diagram diagram) { return diagramDAO.rewriteDiagram(diagram); }
+    public String rewriteDiagram(Diagram diagram) {
+        diagram.setFolderId(addUserToId(diagram.getFolderId()));
+        return diagramDAO.rewriteDiagram(diagram);
+    }
 
     @Transactional
     @Override
     public boolean createFolder(Folder folder) {
         String creatorName = SecurityContextHolder.getContext().getAuthentication().getName();
         folder.setCreator(userService.findByUserName(creatorName));
+        folder.setFolderId(addUserToId(folder.getFolderId()));
+        folder.setFolderParentId(addUserToId(folder.getFolderParentId()));
+
         return diagramDAO.createFolder(folder);
     }
 
     @Transactional
     @Override
-    public List<String> getFolderNames(String currentFolderId) { return diagramDAO.getFolderNames(currentFolderId); }
+    public List<String> getFolderNames(String currentFolderId) {
+        currentFolderId = addUserToId(currentFolderId);
+        return diagramDAO.getFolderNames(currentFolderId); }
 
     @Transactional
     @Override
-    public String getUserName() { return SecurityContextHolder.getContext().getAuthentication().getName(); }
+    public List<String> getDiagramNames(String folderId) {
+        folderId = addUserToId(folderId);
+        return diagramDAO.getDiagramNames(folderId);
+    }
 
-    @Transactional
-    @Override
-    public List<String> getDiagramNames(String folderId) { return diagramDAO.getDiagramNames(folderId); }
+    private String addUserToId(String folderId) {
+        String creatorName = SecurityContextHolder.getContext().getAuthentication().getName();
+        return creatorName + folderId;
+    }
 }
