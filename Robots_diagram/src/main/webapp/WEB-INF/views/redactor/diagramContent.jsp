@@ -95,6 +95,8 @@
                     <div class="modal-body_nopadding">
                         <div class="folderMenu">
                         </div>
+                        <div class="folderPath">
+                        </div>
                         <div class="folderView">
                             <ul class="folderTable">
                             </ul>
