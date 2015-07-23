@@ -16,20 +16,6 @@ class DiagramMenuManager {
 
         var menuManager = this;
 
-        $.ajax({
-            type: 'POST',
-            url: 'createFolder',
-            dataType: 'text',
-            contentType: 'application/json',
-            data: (ExportManager.exportFolderToJSON("root_0", "root", "")),
-            success: function () {
-                console.log("OK");
-            },
-            error: function (response, status, error) {
-                console.log("error: " + status + " " + error);
-            }
-        });
-
         $(document).ready(function() {
             $('.modal-footer button').click(function() {
                 menuManager.currentFolder = "root";
@@ -65,7 +51,6 @@ class DiagramMenuManager {
                 console.log(response);
                 menuManager.currentFolder = "root";
                 menuManager.pathToFolder = [];
-                console.log(menuManager.pathToFolder.length);
                 $('#diagrams').modal('hide');
 
                 if (menuManager.canBeDeleted) {
@@ -249,7 +234,6 @@ class DiagramMenuManager {
         this.showPathToFolder();
         var currentFolderId = this.currentFolder + "_" + this.pathToFolder.length;
         var menuManager = this;
-        console.log(currentFolderId);
         $.ajax({
             type: 'POST',
             url: 'getFolderNames',
@@ -278,7 +262,6 @@ class DiagramMenuManager {
             contentType: 'application/json',
             data: (JSON.stringify({name: currentFolderId})),
             success: function(response) {
-                //console.log(response);
                 $.each(response, function (i) {
                     $('.folderView ul').append("<li class='diagrams'><span class='glyphicon glyphicon-file' aria-hidden='true'></span>" +
                         "<span class='glyphicon-class'>" + response[i] + "</span></li>");
@@ -305,7 +288,7 @@ class DiagramMenuManager {
         var name: string = $('.folderMenu input:text').val();
         var menuManager = this;
         var newFolderLevel: number = this.pathToFolder.length + 1;
-        var newfolderId: string = name + "_" + newFolderLevel;
+        var newFolderId: string = name + "_" + newFolderLevel;
         var currentFolderId: string = this.currentFolder + "_" + this.pathToFolder.length;
         if (name === "") {
             this.writeWarning("Empty name", '.folderMenu');
@@ -316,7 +299,7 @@ class DiagramMenuManager {
                 url: 'createFolder',
                 dataType: 'text',
                 contentType: 'application/json',
-                data: (ExportManager.exportFolderToJSON(newfolderId, name, currentFolderId)),
+                data: (ExportManager.exportFolderToJSON(newFolderId, name, currentFolderId)),
                 success: function () {
                     menuManager.showFolderMenu();
                     menuManager.showFolderTable(menuManager.currentFolder);

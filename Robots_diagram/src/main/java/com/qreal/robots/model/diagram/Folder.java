@@ -28,6 +28,13 @@ public class Folder implements Serializable{
     @JoinColumn(name = "username", nullable = false)
     private User creator;
 
+    public Folder(String folderName, String folderId, String folderParentId, User creator) {
+        this.folderName = folderName;
+        this.folderId = folderId;
+        this.folderParentId = folderParentId;
+        this.creator = creator;
+    }
+
     public void setFolderId(String folderId) { this.folderId = folderId; }
 
     public String getFolderId() { return this.folderId; }
